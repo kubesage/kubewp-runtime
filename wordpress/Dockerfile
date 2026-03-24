@@ -20,7 +20,11 @@ RUN { \
 # OPcache configuration (per D-08) - separate file for clarity
 COPY opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
-# Redis object-cache.php drop-in installed via Composer (see D-03)
+# Install Composer dependencies for S3 media offload (per D-12)
+COPY composer.json /var/www/html/wp-content/composer.json
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
+    && cd /var/www/html/wp-content && composer install --no-dev --optimize-autoloader --no-interaction \
+    && rm -f /usr/local/bin/composer
 
 # Platform mu-plugins (always active, cannot be deactivated by users)
 COPY mu-plugins/ /var/www/html/wp-content/mu-plugins/

@@ -1,0 +1,10 @@
+{
+  "name": "kubewp/wordpress-runtime",
+  "description": "KubeWP WordPress runtime dependencies",
+  "require": {
+    "aws/aws-sdk-php": "^3.0"
+  },
+  "config": {
+    "optimize-autoloader": true
+  }
+}
