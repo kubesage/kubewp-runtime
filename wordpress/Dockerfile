@@ -23,6 +23,12 @@ RUN { \
     echo 'max_input_vars = 5000'; \
 } > /usr/local/etc/php/conf.d/kubewp.ini
 
+# Install Composer dependencies for S3 media offload (per D-12)
+COPY composer.json /var/www/html/wp-content/composer.json
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
+    && cd /var/www/html/wp-content && composer install --no-dev --optimize-autoloader --no-interaction \
+    && rm -f /usr/local/bin/composer
+
 # Platform mu-plugins (always active, cannot be deactivated by users)
 COPY mu-plugins/ /var/www/html/wp-content/mu-plugins/
 
