@@ -6,22 +6,21 @@ RUN pecl install redis && docker-php-ext-enable redis
 # PHP-FPM config for Kubernetes
 COPY php-fpm-kubewp.conf /usr/local/etc/php-fpm.d/zz-kubewp.conf
 
-# PHP config: Redis sessions, OPcache for immutable deploys
+# PHP config: Redis sessions and PHP limits
 RUN { \
     echo 'session.save_handler = redis'; \
     echo 'session.save_path = "tcp://${REDIS_HOST:-redis}:${REDIS_PORT:-6379}"'; \
-    echo 'opcache.enable = 1'; \
-    echo 'opcache.validate_timestamps = 0'; \
-    echo 'opcache.revalidate_freq = 0'; \
-    echo 'opcache.max_accelerated_files = 20000'; \
-    echo 'opcache.memory_consumption = 256'; \
-    echo 'opcache.interned_strings_buffer = 16'; \
     echo 'upload_max_filesize = 256M'; \
     echo 'post_max_size = 256M'; \
     echo 'memory_limit = 512M'; \
     echo 'max_execution_time = 300'; \
     echo 'max_input_vars = 5000'; \
 } > /usr/local/etc/php/conf.d/kubewp.ini
+
+# OPcache configuration (per D-08) - separate file for clarity
+COPY opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+
+# Redis object-cache.php drop-in installed via Composer (see D-03)
 
 # Platform mu-plugins (always active, cannot be deactivated by users)
 COPY mu-plugins/ /var/www/html/wp-content/mu-plugins/
