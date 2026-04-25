@@ -1,0 +1,38 @@
+# Phase 20.5 — kubewp-runtime local smoke harness.
+# Optional: only used by `make test` and `make dev` for verifying the
+# runtime image. NOT a development loop with HMR — this image rebuilds
+# on Dockerfile changes only (no source bind-mount needed).
+services:
+  mysql:
+    image: mysql:8.0
+    profiles: ["dev"]
+    environment:
+      MYSQL_ROOT_PASSWORD: rootlocaldev
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  redis:
+    image: redis:7-alpine
+    profiles: ["dev"]
+
+  wordpress:
+    profiles: ["dev"]
+    image: kubewp-runtime:dev
+    depends_on:
+      - mysql
+      - redis
+    environment:
+      WORDPRESS_DB_HOST: mysql
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "9000:9000"
+
+volumes:
+  mysql_data:

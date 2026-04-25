@@ -6,6 +6,20 @@ Cloud-native WordPress runtime for Kubernetes. Provides production-ready Nginx r
 
 kubewp-runtime packages WordPress into a two-container pod architecture optimized for Kubernetes deployments. The images handle caching, security hardening, media offloading, and platform integration out of the box -- so operators get a production-grade WordPress runtime without manual tuning.
 
+## Local Development Rule
+
+The kubewp-runtime container IS the artifact — there is no separate dev loop with HMR. All build invocations go through `docker build` via the Makefile.
+
+| Verb | Container command |
+|------|-------------------|
+| `docker build` (the runtime image) | `make build` |
+| Smoke-test the built image | `make test` |
+| Bring up WordPress + MySQL + Redis for manual testing | `make dev` |
+
+Reason: even for a "Dockerfile-only" repo, all build commands MUST go through the Makefile so they are auditable and consistent with the rest of the kubesage ecosystem. See workspace `CLAUDE.md > Local Development Rule` for the full rationale.
+
+Verify (when alongside the kubesage workspace): `./ws verify-no-host-install`. The check for this repo skips the "Dockerfile.dev required" rule by design (the production Dockerfile IS the artifact).
+
 ## Architecture
 
 The runtime uses a two-container pod model:
