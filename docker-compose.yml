@@ -2,6 +2,7 @@
 # Optional: only used by `make test` and `make dev` for verifying the
 # runtime image. NOT a development loop with HMR — this image rebuilds
 # on Dockerfile changes only (no source bind-mount needed).
+name: kubewp-runtime
 services:
   mysql:
     image: mysql:8.0
